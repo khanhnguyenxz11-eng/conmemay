@@ -1,0 +1,632 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0618">
+<title>20/10 — Một món quà dành cho bạn</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&family=Playfair+Display:wght@700;800&family=Dancing+Script:wght@600;700&display=swap">
+<style>
+:root{--bg:#0b0618;--pink:#ff9ed2;--rose:#ff5fa8;--lav:#c9a8ff;--gold:#ffe2a0;--ink:#fff3fb;--paper:#fff6f0;--plum:#5a2650;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{position:relative;overflow:hidden;background:var(--bg);color:var(--ink);font:400 16px/1.6 "Be Vietnam Pro",system-ui,sans-serif}
+body:before,body:after{content:"";position:fixed;width:70vmax;height:70vmax;border-radius:50%;filter:blur(90px);opacity:.28;animation:drift 16s ease-in-out infinite alternate}
+body:before{background:#8a3cff;left:-30vmax;top:-20vmax}
+body:after{background:#ff4f9a;right:-30vmax;bottom:-25vmax;animation-delay:-8s}
+@keyframes drift{to{transform:translate(8vw,6vh) scale(1.15)}}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+#stage{position:absolute;inset:0;z-index:2}
+.scene{position:absolute;inset:0;display:grid;place-items:center;padding:24px 20px 84px;opacity:0;visibility:hidden;transform:scale(.97);transition:opacity .7s,transform .7s,visibility .7s}
+.scene.on{opacity:1;visibility:visible;transform:none}
+.box{width:min(720px,100%);display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.h{font:800 clamp(2rem,7.5vw,4.2rem)/1.12 "Playfair Display",Georgia,serif;background:linear-gradient(100deg,#fff 10%,var(--pink) 55%,var(--lav));-webkit-background-clip:text;background-clip:text;color:transparent;padding:0 .1em}
+.h.sm{font-size:clamp(1.7rem,5.5vw,3rem)}
+.sub{max-width:34em;color:#f3dcf3;font-size:clamp(.95rem,2.6vw,1.15rem)}
+.big{font-size:clamp(56px,14vw,110px);filter:drop-shadow(0 0 24px #ff8bd5aa)}
+.btn{font:800 1rem "Be Vietnam Pro",system-ui,sans-serif;color:#4a1a40;background:linear-gradient(135deg,#ffd1e8,#d3bcff);border:0;border-radius:999px;padding:13px 26px;cursor:pointer;box-shadow:0 8px 30px #ff7ac855,inset 0 1px #fff;transition:transform .2s,filter .2s}
+.btn:hover{filter:brightness(1.08);transform:translateY(-2px)}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:#ffffff14;color:var(--ink);box-shadow:inset 0 0 0 1px #ffffff40}
+:focus-visible{outline:3px solid #fff;outline-offset:3px}
+input{font:inherit;color:var(--ink);background:#ffffff14;border:1px solid #ffffff44;border-radius:999px;padding:13px 20px;text-align:center;width:min(300px,100%)}
+input::placeholder{color:#d9bde6}
+#nx{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:10}
+#mute{position:fixed;left:max(14px,env(safe-area-inset-left));top:calc(12px + env(safe-area-inset-top,0px));z-index:10;padding:9px 13px}
+#dots{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:7px;z-index:10}
+#dots i{width:7px;height:7px;border-radius:9px;background:#ffffff40;transition:all .4s}
+#dots i.on{width:24px;background:var(--pink)}
+
+/* ĐỒNG HỒ KIM 12 GIỜ */
+.clock{
+  width:min(72vw,360px,46vh);
+  filter:drop-shadow(0 0 30px #c26bff88);
+  overflow:visible;
+}
+.face{fill:url(#cg);stroke:#fbe3ff;stroke-width:5}
+.hh,.mh,.sh{
+  stroke-linecap:round;
+  transform-origin:0 0;
+  transition:transform .9s cubic-bezier(.3,1.6,.5,1);
+}
+.hh{stroke:var(--pink);stroke-width:7}
+.mh{stroke:#fff;stroke-width:4}
+.sh{stroke:var(--rose);stroke-width:2}
+.num{
+  font:700 17px Georgia,serif;
+  fill:#ffe6fb;
+  text-anchor:middle;
+  dominant-baseline:central;
+}
+.digits{
+  font:700 clamp(1.8rem,7vw,2.8rem) ui-monospace,Menlo,monospace;
+  letter-spacing:.04em;
+  text-shadow:0 0 20px #ff8fd7;
+}
+
+/* calendar */
+.cal{width:clamp(150px,38vw,230px);aspect-ratio:3/4;perspective:900px}
+.cal>div{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1.3s cubic-bezier(.6,-.2,.2,1.2)}
+.cal.flip>div{transform:rotateX(-180deg)}
+.cal b{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;background:linear-gradient(160deg,#fffdfb,#ffd6ea);color:#a03477;display:grid;place-content:center;font:800 clamp(80px,22vw,140px)/1 "Playfair Display",serif;box-shadow:0 24px 50px #0008;border-top:22px solid #e5629f}
+.cal b small{font:800 .8rem "Be Vietnam Pro";letter-spacing:.1em;display:block;text-align:center}
+.cal b:last-child{transform:rotateX(180deg)}
+.ring{display:inline-block;animation:ring 1s ease-in-out 3;transform-origin:50% 10%}
+@keyframes ring{25%{rotate:16deg}75%{rotate:-16deg}}
+
+/* history */
+.card{background:linear-gradient(150deg,var(--paper),#ffe3f0 70%,#e7dcff);color:#5b2e4d;border-radius:24px 24px 44px 24px;padding:clamp(20px,4vw,34px);text-align:left;box-shadow:0 30px 70px #0009;max-width:600px}
+.card h2{font:800 clamp(1.5rem,4vw,2.1rem)/1.15 "Playfair Display",serif;color:#a03477;margin-bottom:10px;text-align:center}
+.card p{font-family:Georgia,"Times New Roman",serif;margin:9px 0;font-size:clamp(.92rem,2.2vw,1.05rem)}
+
+/* sphere */
+#orbStage{position:relative;width:min(88vw,470px,54vh);aspect-ratio:1;touch-action:none;cursor:grab;user-select:none;perspective:1100px}
+#orbStage:active{cursor:grabbing}
+.halo,.ball,.gloss,.mer,.par{position:absolute;left:50%;top:50%;border-radius:50%;pointer-events:none}
+.halo{width:calc(var(--R)*3.1);height:calc(var(--R)*3.1);margin:calc(var(--R)*-1.55) 0 0 calc(var(--R)*-1.55);background:radial-gradient(circle,#c27bff55,#ff6fc128 45%,transparent 70%);animation:pulse2 4s ease-in-out infinite alternate}
+@keyframes pulse2{to{transform:scale(1.1);opacity:.65}}
+.ball,.gloss,.mer{width:calc(var(--R)*2);height:calc(var(--R)*2);margin:calc(var(--R)*-1) 0 0 calc(var(--R)*-1)}
+.ball{background:radial-gradient(circle at 50% 50%,#1b0d40 0,#241150 58%,#4a2398 84%,#b075ff 100%);box-shadow:inset 0 0 50px #e0a0ff66,0 0 60px #b25cff77}
+.gloss{background:radial-gradient(circle at 30% 20%,#ffffffa0 0,#fff0 26%),radial-gradient(circle at 72% 88%,#ff8fd855,transparent 46%)}
+.globe{position:absolute;inset:0;transform-style:preserve-3d}
+.mer{border:1px solid #ffc3f13a;transform:rotateY(var(--a))}
+.par{width:calc(var(--R)*2*var(--c));height:calc(var(--R)*2*var(--c));margin:calc(var(--R)*-1*var(--c)) 0 0 calc(var(--R)*-1*var(--c));border:1px solid #ffc3f12e;transform:translateY(calc(var(--R)*var(--s)*-1)) rotateX(90deg)}
+.ch{position:absolute;left:50%;top:50%;width:1.2em;height:1.2em;margin:-.6em 0 0 -.6em;text-align:center;line-height:1.2em;font:800 var(--fs,14px)/1.2em "Be Vietnam Pro",system-ui,sans-serif;color:#fff;text-shadow:0 0 9px #ff6fd8;backface-visibility:hidden;transform:rotateY(var(--l)) rotateX(var(--p)) translateZ(calc(var(--R) + 2px))}
+.st{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px #ff9de6;transform:rotateY(var(--l)) rotateX(var(--p)) translateZ(calc(var(--R)*var(--d)))}
+
+/* envelope */
+.env{position:relative;width:min(80vw,400px);height:min(52vw,260px);margin-top:56px;cursor:pointer;filter:drop-shadow(0 28px 32px #000a);transition:transform .4s}
+.env:hover{transform:translateY(-4px) rotate(-1deg)}
+.env>*{position:absolute;left:0;right:0}
+.env .back{inset:0;border-radius:12px;background:linear-gradient(160deg,#c9669f,#8f3a78)}
+.env .letter{bottom:7%;height:88%;margin:0 7%;border-radius:8px;background:linear-gradient(#fffaf3,#ffe9de);color:#7a3b64;padding:14px;font:700 1.15rem "Dancing Script",cursive;text-align:center;z-index:2;box-shadow:0 0 0 1px #e2b970;transition:transform 1s .5s cubic-bezier(.2,.9,.3,1.1)}
+.env.open .letter{transform:translateY(-55%)}
+.env .front{inset:0;z-index:3;border-radius:12px;background:linear-gradient(135deg,#f9bfdf,#e48fc3 60%,#cf74b0);clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%);pointer-events:none}
+.env .flap{top:0;height:62%;z-index:4;background:linear-gradient(160deg,#ffdcef,#ea8cc6);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s,z-index 0s .35s}
+.env.open .flap{transform:rotateX(180deg);z-index:1}
+.env .shine{inset:0;z-index:7;border-radius:12px;pointer-events:none;background:linear-gradient(110deg,transparent 35%,#ffffff88 50%,transparent 65%) 150% 0/250% 100%;mix-blend-mode:overlay;animation:shine 3.6s infinite}
+@keyframes shine{to{background-position:-50% 0}}
+.seal{left:50%!important;right:auto!important;top:46%;width:60px;height:60px;margin:-8px 0 0 -30px;z-index:6;display:grid;place-items:center;border-radius:50%;font:800 26px "Playfair Display",serif;color:#ffe7f3;text-shadow:0 2px 2px #6b1750,0 -1px 1px #fff7;background:radial-gradient(circle at 32% 26%,#ff9fd0,#d83a8e 55%,#8a2070);box-shadow:inset 0 0 0 4px #ffffff26,inset 0 0 0 7px #8a207088,0 8px 18px #5a124a99;animation:pulse 2s ease-in-out infinite;transition:transform .5s,opacity .5s}
+.env.open .seal{transform:scale(1.8) rotate(25deg);opacity:0;animation:none}
+@keyframes pulse{50%{scale:1.1}}
+#reader{position:fixed;inset:0;z-index:9;display:grid;place-items:center;padding:20px;background:#08031499;backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .6s,visibility .6s}
+#reader.show{opacity:1;visibility:visible}
+.paper{position:relative;width:min(92vw,520px);max-height:86vh;overflow:auto;padding:clamp(28px,6vw,48px) clamp(24px,6vw,44px);border-radius:6px;color:#5d2d4d;text-align:center;background:radial-gradient(circle at 18% 8%,#fff,transparent 45%),repeating-linear-gradient(0deg,transparent 0 33px,#e9cfdc66 34px),linear-gradient(160deg,#fffaf3,#ffeadf);box-shadow:0 40px 90px #000b,inset 0 0 60px #e7b8cf55;outline:1px solid #d4a85a;outline-offset:-12px;transform:translateY(40px) scale(.9) rotate(-1.5deg);transition:transform .9s cubic-bezier(.2,.9,.3,1.1)}
+#reader.show .paper{transform:none}
+.paper .date{font:700 .75rem "Be Vietnam Pro",sans-serif;letter-spacing:.2em;color:#b9874a}
+.paper h2{font:700 clamp(1.8rem,6vw,2.4rem) "Dancing Script",cursive;color:#a03477;margin:10px 0 6px}
+.paper p{font:600 clamp(1.15rem,3.8vw,1.5rem)/1.55 "Dancing Script",cursive;white-space:pre-line;min-height:9em;text-align:left}
+.paper .sign{font:700 1.4rem "Dancing Script",cursive;color:#a03477;min-height:1.8em;margin-bottom:12px}
+
+/* book */
+.bookbox{width:min(94vw,780px);height:min(52vh,440px);position:relative;perspective:2200px;margin:6px 0}
+.book{position:absolute;inset:0;transform-style:preserve-3d;transform:translateX(-25%) rotateX(10deg);transition:transform 1s cubic-bezier(.5,0,.2,1)}
+.book.open{transform:translateX(0) rotateX(10deg)}
+.hc{position:absolute;top:-9px;bottom:-13px;background:linear-gradient(160deg,#8d3470,#4b1a44);transform:translateZ(-8px);box-shadow:0 38px 60px #000b}
+.hcR{left:50%;right:-10px;border-radius:0 14px 14px 0}
+.hcL{left:-10px;right:50%;border-radius:14px 0 0 14px;opacity:0;transition:opacity .6s .3s}
+.book.open .hcL{opacity:1}
+.leaf,.endp{position:absolute;left:50%;top:0;width:50%;height:100%}
+.leaf{transform-origin:left center;transform-style:preserve-3d;transform:translateZ(var(--z,0)) rotateY(0);transition:transform 1.15s cubic-bezier(.55,0,.25,1);cursor:pointer}
+.leaf.fl{transform:translateZ(var(--z,0)) rotateY(-180deg)}
+.fc{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.fc.bk{transform:rotateY(180deg)}
+.pgc{position:absolute;inset:0;padding:9% 9% 12%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:.6em;text-align:center;font-size:var(--fs,15px);color:#633352;background:linear-gradient(135deg,#fffaf2,#ffeadf);border-radius:3px 12px 12px 3px;box-shadow:inset 1.6em 0 1.6em -1.2em #8c547266}
+.fc.bk .pgc{border-radius:12px 3px 3px 12px;box-shadow:inset -1.6em 0 1.6em -1.2em #8c547266}
+.pgc:before{content:"";position:absolute;inset:3.5% 4%;border:1px solid #d9b46a99;border-radius:4px;pointer-events:none}
+.pgc span{font-size:2em}
+.pgc h4{font:800 1.5em "Playfair Display",serif;color:#a03477}
+.pgc p{font:italic 600 1em/1.7 Georgia,serif}
+.pgc p::first-letter{font-size:1.5em;color:#b03a7e}
+.pn{position:absolute;bottom:5%;font:700 .8em Georgia,serif;font-style:normal;color:#b98aa8}
+.cover{position:absolute;inset:0;border-radius:4px 14px 14px 4px;background:radial-gradient(circle at 28% 18%,#c25a92,#7a2358 48%,#341033);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8em;color:#f6d98f;text-align:center;font-size:var(--fs,15px);box-shadow:inset 0 0 0 .5em #ffffff12,inset 0 0 0 .62em #e9c77a,inset 0 0 3em #000a}
+.cover h3{font:800 2em/1.2 "Playfair Display",serif;text-shadow:0 1px 0 #fff7,0 -1px 2px #000a;padding:0 .4em}
+.cover em{font-style:normal;font-weight:600;letter-spacing:.1em;font-size:.85em}
+.cover b{font-size:2.6em;filter:drop-shadow(0 4px 6px #0008)}
+.ribbon{position:absolute;left:49%;bottom:-40px;width:16px;height:70px;background:linear-gradient(#ee4a8c,#b02466);clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%);transform:translateZ(10px);opacity:0;transition:opacity .6s .5s}
+.book.open .ribbon{opacity:1}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.btn:disabled{opacity:.4;pointer-events:none}
+
+/* finale */
+.record{width:min(46vw,200px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#ffe3f4 0 8%,#d36eb4 9% 26%,#2a1538 27%),repeating-radial-gradient(circle,#15101f 0 3px,#33233f 4px 5px);border:6px solid #2b1c3a;box-shadow:0 0 40px #ec9eff88;animation:spin 5s linear infinite}
+@keyframes spin{to{rotate:360deg}}
+.sig{font:italic 700 clamp(1.1rem,3vw,1.4rem)/1.7 Georgia,serif;color:#ffcee8}
+@media(max-height:640px){.scene{padding-bottom:70px}.box{gap:8px}.big{font-size:52px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<main id="stage">
+
+<!-- 0: mở đầu -->
+<section class="scene on">
+<div class="box">
+<div class="big">🎁</div>
+<h1 class="h">Có một món quà<br>dành cho bạn</h1>
+<p class="sub">Nhập tên của bạn tại đây và mở quà nhé.</p>
+<input id="who" maxlength="30" placeholder="Tên của bạn" aria-label="Tên người nhận" autocomplete="off">
+<button class="btn" id="go">Mở quà 💗</button>
+</div>
+</section>
+
+<!-- 1: đồng hồ 12 giờ -->
+<section class="scene">
+<div class="box">
+<p class="sub">Chỉ còn ít giây nữa thôi…</p>
+<svg class="clock" viewBox="-150 -150 300 300" role="img" aria-label="Đồng hồ kim 12 giờ đếm ngược đến nửa đêm">
+<defs>
+<radialGradient id="cg" cx=".3" cy=".2" r="1">
+<stop offset="0" stop-color="#8e6eb4"/>
+<stop offset=".35" stop-color="#3b2260"/>
+<stop offset="1" stop-color="#0c081b"/>
+</radialGradient>
+</defs>
+<circle class="face" r="144"/>
+<g id="ticks"></g>
+<g id="nums"></g>
+<line class="hh" id="hh" x1="0" y1="0" x2="0" y2="-62"/>
+<line class="mh" id="mh" x1="0" y1="0" x2="0" y2="-92"/>
+<line class="sh" id="sh" x1="0" y1="0" x2="0" y2="-108"/>
+<circle r="8" fill="#fff"/>
+</svg>
+<div class="digits" id="digits">11:59:55 PM</div>
+</div>
+</section>
+
+<!-- 2: nửa đêm -->
+<section class="scene">
+<div class="box">
+<div class="big ring">🔔</div>
+<h1 class="h sm">Ding… Ding… Nửa đêm rồi!</h1>
+<div class="cal" id="cal">
+<div>
+<b><small>THÁNG 10</small>19</b>
+<b><small>THÁNG 10</small>20</b>
+</div>
+</div>
+<p class="sub">Một trang mới được lật sang.</p>
+</div>
+</section>
+
+<!-- 3: lời chúc -->
+<section class="scene">
+<div class="box">
+<div class="big">🌹</div>
+<h1 class="h">Chúc mừng<br>Ngày Phụ nữ Việt Nam</h1>
+<p class="sub"><b class="nm"></b> ơi, chúc bạn luôn xinh đẹp, hạnh phúc, tự tin và được yêu thương mỗi ngày.</p>
+</div>
+</section>
+
+<!-- 4: lịch sử -->
+<section class="scene">
+<div class="box">
+<article class="card">
+<h2>Vì sao có ngày 20/10?</h2>
+<p><strong>Ngày 20/10/1930</strong>, Hội Phụ nữ phản đế (tiền thân của Hội Liên hiệp Phụ nữ Việt Nam) được thành lập. Từ đó, 20/10 trở thành ngày tôn vinh vai trò và đóng góp của phụ nữ Việt Nam trong gia đình và xã hội.</p>
+<p>Hôm nay, đó là dịp để gửi lời tri ân đến bà, mẹ, chị em, cô giáo, bạn bè và mọi người phụ nữ đã làm cuộc sống tốt đẹp hơn.</p>
+</article>
+</div>
+</section>
+
+<!-- 5: quả cầu -->
+<section class="scene">
+<div class="box">
+<h1 class="h sm">Quả cầu lời chúc ✨</h1>
+<div id="orbStage" aria-label="Kéo để xoay quả cầu lời chúc">
+<div class="halo"></div>
+<div class="ball"></div>
+<div class="globe" id="globe"></div>
+<div class="gloss"></div>
+</div>
+<p class="sub">Quả cầu lời chúc</p>
+</div>
+</section>
+
+<!-- 6: thư -->
+<section class="scene">
+<div class="box">
+<h1 class="h sm">Bạn có thư mới 💌</h1>
+<div class="env" id="env" role="button" tabindex="0" aria-label="Mở thư">
+<div class="back"></div>
+<div class="letter" id="letter"></div>
+<div class="front"></div>
+<div class="flap"></div>
+<div class="seal" id="seal">♥</div>
+<i class="shine"></i>
+</div>
+<p class="sub" id="envHint">Chạm để mở</p>
+</div>
+</section>
+
+<!-- 7: sách -->
+<section class="scene">
+<div class="box">
+<h1 class="h sm">Cuốn sách lời chúc 📖</h1>
+<div class="bookbox"><div class="book" id="book"></div></div>
+<div class="row">
+<button class="btn ghost" id="bpv">‹ Trước</button>
+<span class="sub" id="bc"></span>
+<button class="btn" id="bnx">Mở sách</button>
+</div>
+</div>
+</section>
+
+<!-- 8: kết -->
+<section class="scene">
+<div class="box">
+<div class="record" aria-hidden="true"></div>
+<h1 class="h">Cảm ơn <span class="nm"></span><br>vì đã xem hết</h1>
+<p class="sig">Chúc bạn được yêu thương,<br>hôm nay và cả những ngày sau. ♡</p>
+<p class="sub">Happy Vietnamese Women’s Day · 20/10/2026</p>
+<div class="row">
+<button class="btn" id="copy">Sao chép lời chúc</button>
+<button class="btn ghost" id="again">Xem lại ↻</button>
+</div>
+</div>
+</section>
+</main>
+
+<div id="reader">
+<div class="paper">
+<div class="date">20 · 10 · 2026</div>
+<h2 id="rt1"></h2>
+<p id="rt2"></p>
+<div class="sign" id="rt3"></div>
+<button class="btn" id="rbtn" hidden>Cất thư 📩</button>
+</div>
+</div>
+
+<button class="btn ghost" id="mute" aria-label="Bật hoặc tắt nhạc" hidden>📣</button>
+<div id="dots" aria-hidden="true"></div>
+<button class="btn" id="nx" hidden>Tiếp tục ✨</button>
+
+<script>
+const $=s=>document.querySelector(s),S=[...document.querySelectorAll('.scene')],nx=$('#nx');
+let cur=0,tm=[],name='',ac,master,muted=false,musicT,step=0;
+const later=(f,ms)=>tm.push(setTimeout(f,ms)),who=()=>name||'bạn';
+
+/* ---------- nền: cánh hoa + pháo hoa ---------- */
+const cv=$('#fx'),cx=cv.getContext('2d'),P=[];
+let W,H,dpr;
+function fit(){
+  dpr=Math.min(devicePixelRatio||1,2);
+  W=innerWidth;H=innerHeight;
+  cv.width=W*dpr;cv.height=H*dpr;
+  cx.setTransform(dpr,0,0,dpr,0,0)
+}
+addEventListener('resize',fit);fit();
+const cols=['#ffb3da','#ff7ec0','#ffd6ec','#e0c4ff','#fff0a8'];
+function petal(){
+  P.push({k:0,x:Math.random()*W,y:-20,vx:Math.random()*.8-.2,vy:.7+Math.random()*1.1,r:5+Math.random()*7,a:Math.random()*6,va:Math.random()*.04-.02,c:cols[Math.random()*5|0],ph:Math.random()*6})
+}
+function boom(x=W*(.2+Math.random()*.6),y=H*(.15+Math.random()*.35)){
+  const h=290+Math.random()*90;
+  for(let i=0;i<80;i++){
+    const a=Math.random()*6.283,v=1+Math.random()*4.6;
+    P.push({k:1,x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,c:`hsl(${h+Math.random()*50},100%,${68+Math.random()*18}%)`})
+  }
+}
+function frame(){
+  cx.clearRect(0,0,W,H);
+  if(P.filter(p=>!p.k).length<(cur>=2?34:16)&&Math.random()<.18)petal();
+  for(let i=P.length-1;i>=0;i--){
+    const p=P[i];
+    if(p.k){
+      p.vy+=.045;p.vx*=.985;p.vy*=.985;p.x+=p.vx;p.y+=p.vy;p.l-=.011;
+      if(p.l<=0){P.splice(i,1);continue}
+      cx.globalCompositeOperation='lighter';cx.globalAlpha=p.l;cx.fillStyle=p.c;
+      cx.beginPath();cx.arc(p.x,p.y,2.2,0,6.283);cx.fill()
+    }else{
+      p.ph+=.03;p.x+=p.vx+Math.sin(p.ph)*.6;p.y+=p.vy;p.a+=p.va;
+      if(p.y>H+20){P.splice(i,1);continue}
+      cx.globalCompositeOperation='source-over';cx.globalAlpha=.8;cx.fillStyle=p.c;
+      cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.beginPath();cx.ellipse(0,0,p.r,p.r*.55,0,0,6.283);cx.fill();cx.restore()
+    }
+  }
+  cx.globalAlpha=1;cx.globalCompositeOperation='source-over';
+  requestAnimationFrame(frame)
+}
+frame();
+const salvo=n=>{for(let i=0;i<n;i++)later(()=>boom(),i*420)};
+
+/* ---------- âm thanh: tự tổng hợp ---------- */
+function audio(){
+  if(ac)return;
+  const C=window.AudioContext||window.webkitAudioContext;
+  if(!C)return;
+  ac=new C();master=ac.createGain();master.gain.value=.55;
+  const d=ac.createDelay(),f=ac.createGain();
+  d.delayTime.value=.34;f.gain.value=.38;
+  d.connect(f);f.connect(d);master.connect(ac.destination);master.connect(d);d.connect(ac.destination)
+}
+function tone(f,t,dur,v,ty='sine'){
+  const o=ac.createOscillator(),g=ac.createGain();
+  o.type=ty;o.frequency.value=f;
+  g.gain.setValueAtTime(.0001,t);
+  g.gain.exponentialRampToValueAtTime(v,t+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+dur+.05)
+}
+const chords=[[261.6,329.6,392,523.3],[220,261.6,329.6,440],[174.6,220,261.6,349.2],[196,246.9,293.7,392]],pat=[0,1,2,3,2,1,3,2];
+function music(){
+  if(!ac||musicT)return;
+  musicT=setInterval(()=>{
+    if(muted||ac.state!=='running')return;
+    const c=chords[(step>>3)%4],t=ac.currentTime;
+    tone(c[pat[step%8]]*(step%8===0?.5:1),t,1.4,.05,'triangle');
+    if(step%8===4)tone(c[3]*2,t,1.8,.025);
+    step++
+  },360)
+}
+function chime(){
+  if(!ac||muted)return;
+  const t=ac.currentTime;
+  [1318.5,1568,2093].forEach((f,i)=>tone(f,t+i*.16,2.2,.12))
+}
+$('#mute').onclick=()=>{
+  muted=!muted;
+  $('#mute').textContent=muted?'🔇':'🔊'
+};
+
+/* ---------- MẶT ĐỒNG HỒ 12 GIỜ ---------- */
+
+/* Vạch phút và vạch giờ */
+$('#ticks').innerHTML=Array.from({length:60},(_,i)=>{
+  const major=i%5===0;
+  return `<line x1="0" x2="0"
+    y1="${major?-132:-136}" y2="-142"
+    stroke="${major?'#ffcae9':'#f6d8ff88'}"
+    stroke-width="${major?3:1.2}"
+    transform="rotate(${i*6})"/>`
+}).join('');
+
+/* Số 1 đến 12 theo đúng vị trí mặt đồng hồ */
+$('#nums').innerHTML=Array.from({length:12},(_,i)=>{
+  const n=i===0?12:i;
+  const a=i*30*Math.PI/180;
+  return `<text class="num"
+    x="${(Math.sin(a)*112).toFixed(1)}"
+    y="${(-Math.cos(a)*112).toFixed(1)}">${n}</text>`
+}).join('');
+
+/*
+  Đồng hồ đếm ngược 5 giây:
+  11:59:55 PM -> 12:00:00 AM.
+  Góc kim giờ dùng hệ 12 tiếng: 30 độ mỗi giờ.
+*/
+function clock(s){
+  const sec=Math.min(s,60);
+
+  // Kim giây
+  $('#sh').style.transform=`rotate(${sec*6}deg)`;
+
+  // Kim phút
+  $('#mh').style.transform=`rotate(${(59+sec/60)*6}deg)`;
+
+  // Kim giờ: từ gần số 12 đến đúng số 12
+  $('#hh').style.transform=`rotate(${(11+(59+sec/60)/60)*30}deg)`;
+
+  // Đồng hồ điện tử 12 giờ, có AM/PM
+  $('#digits').textContent=s>=60
+    ?'12:00:00 AM'
+    :'11:59:'+String(s).padStart(2,'0')+' PM'
+}
+
+/* ---------- quả cầu 3D ---------- */
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const os=$('#orbStage'),gl=$('#globe'),rows=[-50,-25,0,25,50];
+const wl=['Xinh đẹp 🌸','Hạnh phúc 💗','Bình an 🌿','Thành công ✨','Được yêu thương','Tự tin tỏa sáng','Nhiều may mắn 🍀','Rạng rỡ mỗi ngày','Ước mơ thành thật','Luôn mỉm cười 😊','Thật nhiều niềm vui','Mạnh mẽ, dịu dàng','Sức khỏe dồi dào','Bình yên mỗi ngày','Mãi trẻ trung 🌷'];
+const cw=c=>c===' '?.34:/[il.,fjtI!]/.test(c)?.36:/[mwMW]/.test(c)?.9:c.codePointAt(0)>8000?1.15:.62;
+function build(){
+  const R=os.clientWidth*.37,fs=R*.09;
+  os.style.setProperty('--R',R+'px');os.style.setProperty('--fs',fs+'px');
+  let h='';
+  for(let a=0;a<6;a++)h+=`<i class="mer" style="--a:${a*30}deg"></i>`;
+  [-60,-30,0,30,60].forEach(p=>{
+    const r=p*Math.PI/180;
+    h+=`<i class="par" style="--c:${Math.cos(r).toFixed(3)};--s:${Math.sin(r).toFixed(3)}"></i>`
+  });
+  wl.forEach((t,i)=>{
+    const r=i%5,k=i/5|0,p=rows[r],rr=R*Math.cos(p*Math.PI/180);
+    const ch=Array.from(t),ws=ch.map(cw),tot=ws.reduce((a,b)=>a+b,0)*fs,c0=k*120+r*47;
+    let cum=0;
+    ch.forEach((c,j)=>{
+      const mid=(cum+ws[j]*fs/2-tot/2)/rr*57.2958;
+      cum+=ws[j]*fs;
+      if(c!==' ')h+=`<b class="ch" style="--l:${(c0+mid).toFixed(2)}deg;--p:${p}deg">${c}</b>`
+    })
+  });
+  for(let i=0;i<40;i++)h+=`<i class="st" style="--l:${(Math.random()*360).toFixed(0)}deg;--p:${(Math.random()*160-80).toFixed(0)}deg;--d:${(1.12+Math.random()*.4).toFixed(2)};opacity:${(.4+Math.random()*.6).toFixed(2)}"></i>`;
+  gl.innerHTML=h
+}
+let rx=-12,ry=0,vx=0,vy=.25,drag=false,lx=0,ly=0;
+function orb(){
+  if(cur===5){
+    if(!drag){ry+=vy;rx+=vx;vy+=(.25-vy)*.03;vx*=.94}
+    rx=Math.max(-40,Math.min(40,rx));
+    gl.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`
+  }
+  requestAnimationFrame(orb)
+}
+orb();
+os.onpointerdown=e=>{drag=true;lx=e.clientX;ly=e.clientY;vx=vy=0;os.setPointerCapture(e.pointerId)};
+os.onpointermove=e=>{
+  if(!drag)return;
+  const dx=e.clientX-lx,dy=e.clientY-ly;
+  ry+=dx*.45;rx-=dy*.3;vy=dx*.45;vx=-dy*.3;lx=e.clientX;ly=e.clientY
+};
+['onpointerup','onpointercancel'].forEach(k=>os[k]=()=>drag=false);
+
+/* ---------- thư ---------- */
+const env=$('#env'),rd=$('#reader');
+let typer;
+function type(el,t,cb){
+  clearInterval(typer);el.textContent='';
+  let i=0;const c=Array.from(t);
+  typer=setInterval(()=>{
+    el.textContent+=c[i++]||'';
+    if(i>=c.length){clearInterval(typer);cb&&cb()}
+  },32)
+}
+function openEnv(){
+  if(env.classList.contains('open'))return;
+  env.classList.add('open');$('#envHint').textContent='';
+  chime();boom(W/2,H*.35);salvo(2);
+  later(()=>{
+    rd.classList.add('show');
+    $('#rt1').textContent='Gửi '+who()+',';
+    type($('#rt2'),'Cảm ơn bạn vì đã luôn là chính mình.\nMong 20/10 này mang đến cho bạn thật nhiều hoa, thật nhiều tiếng cười và một cái ôm thật ấm.\nBạn xứng đáng được nhận được những điều ấy.',()=>{
+      $('#rt3').textContent='Với tất cả yêu thương ♡';
+      $('#rbtn').hidden=false
+    })
+  },1900)
+}
+env.onclick=openEnv;
+env.onkeydown=e=>{
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();openEnv()}
+};
+$('#rbtn').onclick=()=>go(7);
+
+/* ---------- sách ---------- */
+const N=4;
+let bp=0,leaves=[];
+const pg=(n,e,t)=>`<div class="pgc"><span>${e}</span><p>${t}</p><i class="pn">${n}</i></div>`;
+function fit2(){
+  const b=$('.bookbox');
+  if(b)$('#book').style.setProperty('--fs',Math.max(11.5,Math.min(19,b.clientWidth*.024))+'px')
+}
+function mkBook(){
+  const w=esc(who());
+  const L=[
+    {f:`<div class="cover"><em>✦ ❀ ✦</em><h3>Những lời chúc<br>đặc biệt</h3><em>dành tặng ${w}</em><b>🌹</b></div>`,b:`<div class="pgc"><span>🌷</span><h4>Gửi ${w}</h4><p>Cuốn sách nhỏ này gói những lời chúc dịu dàng nhất. Hãy lật từng trang nhé.</p></div>`},
+    {f:pg(1,'☀️','Chúc bạn luôn xinh đẹp, mạnh khỏe, hạnh phúc và thành công trên mọi hành trình.'),b:pg(2,'🌸','Mong mỗi sớm mai đều cho bạn một lý do để mỉm cười.')},
+    {f:pg(3,'🌹','Chúc bạn đủ tự tin để theo đuổi ước mơ và đủ bình yên để yêu thương chính mình.'),b:pg(4,'💜','Dù ngày hôm nay thế nào, bạn vẫn luôn xứng đáng với những điều đẹp nhất.')},
+    {f:pg(5,'💐','Chúc bạn ngày càng hạnh phúc và dịu dàng hơn.'),b:`<div class="pgc"><span>✨</span><h4>Happy 20/10</h4><p>Chúc ${w} một ngày thật nhiều hoa và thật nhiều hạnh phúc.</p><i class="pn">6</i></div>`}
+  ];
+  $('#book').innerHTML='<i class="hc hcL"></i><i class="hc hcR"></i><div class="endp"><div class="pgc"><span>♡</span><h4>Hết</h4><p>20 · 10 · 2026</p></div></div>'+L.map(s=>`<div class="leaf"><div class="fc">${s.f}</div><div class="fc bk">${s.b}</div></div>`).join('')+'<i class="ribbon"></i>';
+  leaves=[...document.querySelectorAll('.leaf')];bp=0;fit2();upd()
+}
+function upd(){
+  $('#book').classList.toggle('open',bp>0);
+  leaves.forEach((l,k)=>{
+    l.classList.toggle('fl',k<bp);
+    l.style.setProperty('--z',((k<bp?k+1:N-k)*1.6)+'px')
+  });
+  $('#bc').textContent=bp===0?'Chạm để mở sách':bp+' / '+N;
+  $('#bpv').disabled=bp===0;
+  $('#bnx').textContent=bp===0?'Mở sách':bp===N?'Hoàn tất ✨':'Lật trang ›'
+}
+function flip(d){
+  if(d>0&&bp===N){go(8);return}
+  const n=bp+d;
+  if(n<0||n>N)return;
+  bp=n;upd();
+  if(ac&&!muted)tone(bp===1?1046:784,ac.currentTime,.9,.05)
+}
+$('#book').onclick=e=>{
+  const l=e.target.closest('.leaf');
+  if(l)flip(l.classList.contains('fl')?-1:1)
+};
+$('#bpv').onclick=()=>flip(-1);
+$('#bnx').onclick=()=>flip(1);
+addEventListener('resize',()=>{build();fit2()});
+build();
+
+/* ---------- điều phối cảnh ---------- */
+const dots=$('#dots');
+dots.innerHTML=S.map(()=>'<i></i>').join('');
+const hooks={
+  1(){
+    let k=0;
+    const t=()=>{
+      clock(55+k);
+      if(k>=5){
+        chime();boom(W/2,H*.3);salvo(3);
+        later(()=>go(2),1200);
+        return
+      }
+      k++;later(t,1000)
+    };
+    t()
+  },
+  2(){
+    $('#cal').classList.remove('flip');
+    later(()=>$('#cal').classList.add('flip'),1200);
+    salvo(5);later(()=>go(3),5600)
+  },
+  3(){later(()=>go(4),6000)},
+  4(){later(()=>go(5),8500)},
+  5(){build();nx.hidden=false},
+  6(){
+    env.classList.remove('open');
+    $('#letter').textContent='💌 Gửi '+who();
+    $('#seal').textContent=who()==='bạn'?'♥':Array.from(who())[0].toUpperCase();
+    $('#envHint').textContent='Chạm vào phong thư để mở';
+    $('#rt2').textContent='';$('#rt3').textContent='';$('#rbtn').hidden=true
+  },
+  7(){mkBook()},
+  8(){
+    nx.hidden=true;
+    const l=()=>{if(cur!==8)return;boom();later(l,900)};
+    l()
+  }
+};
+function go(i){
+  tm.forEach(clearTimeout);tm=[];
+  clearInterval(typer);
+  rd.classList.remove('show');
+  cur=i;
+  S.forEach((s,k)=>s.classList.toggle('on',k===i));
+  [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===i));
+  nx.hidden=![3,4].includes(i);
+  dots.hidden=i===0;
+  $('#mute').hidden=i===0;
+  document.querySelectorAll('.nm').forEach(e=>e.textContent=who());
+  hooks[i]&&hooks[i]()
+}
+nx.onclick=()=>go(cur+1);
+$('#go').onclick=()=>{
+  name=$('#who').value.trim();
+  audio();
+  if(ac&&ac.resume)ac.resume();
+  music();go(1)
+};
+$('#who').onkeydown=e=>{if(e.key==='Enter')$('#go').click()};
+$('#again').onclick=()=>go(1);
+$('#copy').onclick=async()=>{
+  const t=`Chúc mừng 20/10, ${who()}! Chúc bạn luôn xinh đẹp, hạnh phúc, tự tin và được yêu thương mỗi ngày. 💐`;
+  try{
+    await navigator.clipboard.writeText(t);
+    $('#copy').textContent='Đã sao chép ✓'
+  }catch(e){
+    $('#copy').textContent='Hãy tự chép nhé'
+  }
+};
+go(0);
+</script>
+</body>
+</html>
